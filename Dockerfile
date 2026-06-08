@@ -12,6 +12,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
+# descarga best.pt desde Google Drive
+RUN pip install --no-cache-dir gdown && \
+    mkdir -p models/detector/weights && \
+    gdown --id 17tdGSZz2mnreyHDNGhmnz20VxMyp64jF -O models/detector/weights/best.pt
+
 # precarga los modelos EasyOCR en la imagen para evitar descarga en runtime
 RUN python -c "import easyocr; easyocr.Reader(['es','en'], gpu=False)"
 
