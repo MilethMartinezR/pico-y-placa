@@ -20,6 +20,6 @@ RUN pip install --no-cache-dir gdown && \
 # precarga los modelos EasyOCR en la imagen para evitar descarga en runtime
 RUN python -c "import easyocr; easyocr.Reader(['es','en'], gpu=False)"
 
-EXPOSE 10000
+EXPOSE 7860
 
-CMD ["python", "-m", "gunicorn", "-w", "1", "-b", "0.0.0.0:10000", "src.api.app:create_app()"]
+CMD ["python", "-m", "gunicorn", "-w", "1", "-b", "0.0.0.0:7860", "src.api.app:create_app()"]
