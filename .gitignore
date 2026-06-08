@@ -1,0 +1,12 @@
+models/detector/weights/*.pt
+data/raw/
+data/yolo/
+__pycache__/
+*.pyc
+*.pyo
+recorte*.jpg
+test_*.jpg
+debug_ocr.py
+.env
+*.egg-info/
+dist/
