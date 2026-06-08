@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html class="light" lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Validador de Placa – Pico y Placa</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    theme: { extend: {
+      colors: {
+        "surface-dim":"#cbdbf5","on-secondary":"#ffffff","on-background":"#0b1c30","on-primary-fixed":"#001453",
+        "on-secondary-container":"#684000","primary-fixed-dim":"#b8c4ff","surface-container-low":"#eff4ff",
+        "surface-bright":"#f8f9ff","surface-container-high":"#dce9ff","surface-container-lowest":"#ffffff",
+        "primary-fixed":"#dde1ff","on-tertiary-fixed":"#002113","tertiary-container":"#00563a",
+        "surface-container":"#e5eeff","secondary-container":"#fea619","inverse-surface":"#213145",
+        "primary-container":"#1e40af","on-primary-container":"#a8b8ff","surface-variant":"#d3e4fe",
+        "on-secondary-fixed-variant":"#653e00","on-secondary-fixed":"#2a1700","background":"#f8f9ff",
+        "on-primary-fixed-variant":"#173bab","surface-tint":"#3755c3","surface-container-highest":"#d3e4fe",
+        "outline":"#757684","inverse-on-surface":"#eaf1ff","on-primary":"#ffffff","secondary-fixed-dim":"#ffb95f",
+        "tertiary-fixed":"#6ffbbe","inverse-primary":"#b8c4ff","surface":"#f8f9ff","error":"#ba1a1a",
+        "on-surface-variant":"#444653","error-container":"#ffdad6","on-error":"#ffffff","primary":"#00288e",
+        "secondary":"#855300","outline-variant":"#c4c5d5","tertiary":"#003d27",
+        "on-tertiary-fixed-variant":"#005236","tertiary-fixed-dim":"#4edea3","secondary-fixed":"#ffddb8","on-tertiary":"#ffffff"
+      },
+      borderRadius: { DEFAULT:"0.25rem", lg:"0.5rem", xl:"0.75rem", full:"9999px" },
+      spacing: { "stack-sm":"8px","gutter":"12px","touch-target-min":"48px","container-padding":"20px","stack-md":"16px","unit":"4px","stack-lg":"24px" },
+      fontFamily: { "label-bold":["Inter"],"display-status":["Inter"],"headline-md":["Inter"],"body-md":["Inter"],"headline-lg-mobile":["Inter"],"label-md":["Inter"],"headline-lg":["Inter"],"body-lg":["Inter"] },
+      fontSize: {
+        "label-bold":["14px",{"lineHeight":"20px","letterSpacing":"0.05em","fontWeight":"700"}],
+        "display-status":["48px",{"lineHeight":"56px","letterSpacing":"-0.02em","fontWeight":"800"}],
+        "headline-md":["24px",{"lineHeight":"32px","fontWeight":"600"}],
+        "body-md":["16px",{"lineHeight":"24px","fontWeight":"400"}],
+        "headline-lg-mobile":["26px",{"lineHeight":"32px","fontWeight":"700"}],
+        "label-md":["14px",{"lineHeight":"20px","fontWeight":"500"}],
+        "headline-lg":["30px",{"lineHeight":"38px","fontWeight":"700"}],
+        "body-lg":["18px",{"lineHeight":"28px","fontWeight":"400"}]
+      }
+    }}
+  }
+</script>
+<style>
+  .material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24; }
+  body { font-family:'Inter',sans-serif; min-height:max(884px,100dvh); -webkit-tap-highlight-color:transparent; }
+  .plate-input-shadow { box-shadow: inset 0 2px 4px rgba(0,0,0,.05); }
+  @keyframes slideUp { from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1} }
+  .active-result { animation: slideUp 0.4s cubic-bezier(0.16,1,0.3,1); }
+</style>
+</head>
+<body class="bg-background text-on-surface min-h-screen flex flex-col">
+
+<header class="docked top-0 bg-surface border-b border-outline-variant flex justify-between items-center w-full px-container-padding h-touch-target-min z-50 sticky">
+  <div class="flex items-center gap-gutter">
+    <span class="material-symbols-outlined text-primary">traffic</span>
+    <h1 class="font-headline-md text-headline-md font-bold text-primary">Pico y Placa</h1>
+  </div>
+  <a href="/" class="w-touch-target-min h-touch-target-min flex items-center justify-center rounded-full hover:bg-surface-container-low transition-colors">
+    <span class="material-symbols-outlined text-on-surface-variant">arrow_back</span>
+  </a>
+</header>
+
+<main class="flex-grow px-container-padding py-stack-lg max-w-xl mx-auto w-full">
+  <div class="mb-stack-lg">
+    <h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-unit">Validar Vehículo</h2>
+    <p class="font-body-md text-body-md text-on-surface-variant">Sube una foto de la placa o ingrésala manualmente para verificar la restricción.</p>
+  </div>
+
+  <div class="space-y-stack-lg">
+    <!-- Ciudad -->
+    <div class="flex flex-col gap-unit">
+      <label class="font-label-bold text-label-bold text-outline uppercase tracking-wider pl-1">Ciudad</label>
+      <div class="relative">
+        <select id="city-select" class="w-full h-touch-target-min bg-surface border border-outline-variant rounded-lg px-4 appearance-none font-body-md text-on-surface focus:ring-2 focus:ring-primary focus:border-primary transition-all cursor-pointer">
+          <option value="bogota">Bogotá D.C.</option>
+          <option value="medellin">Medellín</option>
+          <option value="cali">Cali</option>
+        </select>
+        <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant">expand_more</span>
+      </div>
+    </div>
+
+    <!-- Foto -->
+    <div class="flex flex-col gap-unit">
+      <label class="font-label-bold text-label-bold text-outline uppercase tracking-wider pl-1">Foto de la Placa</label>
+      <div class="relative border-2 border-dashed border-outline-variant rounded-xl bg-surface-container-low hover:bg-surface-container transition-all cursor-pointer group flex flex-col items-center justify-center p-stack-lg min-h-[160px]" id="upload-zone">
+        <input accept="image/*" capture="environment" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full" id="plate-upload" type="file"/>
+        <div class="w-16 h-16 bg-primary-fixed rounded-full flex items-center justify-center mb-stack-sm group-hover:scale-110 transition-transform" id="upload-icon-wrap">
+          <span class="material-symbols-outlined text-primary text-3xl">add_a_photo</span>
+        </div>
+        <p class="font-label-bold text-label-bold text-primary" id="upload-label">Subir foto de placa</p>
+        <p class="font-body-md text-body-md text-on-surface-variant mt-1" id="upload-sub">Toca para capturar o seleccionar</p>
+      </div>
+      <div class="flex items-center gap-gutter my-unit">
+        <div class="h-px bg-outline-variant flex-grow"></div>
+        <span class="font-label-md text-label-md text-outline">O</span>
+        <div class="h-px bg-outline-variant flex-grow"></div>
+      </div>
+      <div class="relative">
+        <input id="plate-text" class="w-full h-touch-target-min bg-white border border-outline-variant rounded-lg px-10 font-mono text-xl font-bold text-on-surface plate-input-shadow focus:ring-2 focus:ring-primary focus:border-primary transition-all text-center tracking-[0.2em] uppercase" maxlength="7" placeholder="ABC-123" type="text"/>
+        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline">keyboard</span>
+      </div>
+    </div>
+
+    <!-- Botón -->
+    <button id="check-btn" class="w-full h-14 bg-primary text-on-primary rounded-xl font-headline-md text-headline-md shadow-md active:scale-95 transition-transform flex items-center justify-center gap-gutter">
+      <span class="material-symbols-outlined">document_scanner</span>
+      Verificar Ahora
+    </button>
+
+    <!-- Error -->
+    <div id="error-area" class="hidden bg-error-container text-on-error-container rounded-xl px-container-padding py-stack-md flex items-start gap-gutter">
+      <span class="material-symbols-outlined mt-0.5 shrink-0">error</span>
+      <div>
+        <p id="error-msg" class="font-label-bold text-label-bold"></p>
+        <p id="error-hint" class="font-body-md text-body-md mt-1 hidden"></p>
+      </div>
+    </div>
+
+    <!-- Resultado OK -->
+    <div class="hidden active-result" id="result-area">
+      <div class="hidden overflow-hidden rounded-xl border border-outline-variant bg-surface-container-lowest shadow-sm" id="result-ok">
+        <div class="bg-tertiary-container px-container-padding py-stack-md flex items-center gap-gutter">
+          <div class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
+            <span class="material-symbols-outlined text-on-tertiary-container text-3xl" style="font-variation-settings:'FILL' 1">check_circle</span>
+          </div>
+          <div>
+            <p class="font-label-bold text-label-bold text-on-tertiary-container uppercase">Estado: Permitido</p>
+            <h3 class="font-headline-md text-headline-md text-on-tertiary-container">Sin Restricción</h3>
+          </div>
+        </div>
+        <div class="p-container-padding space-y-unit">
+          <p class="font-body-md text-body-md text-on-surface-variant">Placa <span id="ok-plate" class="font-bold text-on-surface"></span> puede circular hoy en <span id="ok-city" class="font-bold text-on-surface"></span>.</p>
+          <p class="font-label-md text-label-md text-on-surface-variant" id="ok-reason"></p>
+          <p class="font-label-md text-label-md text-outline flex items-center gap-1"><span class="material-symbols-outlined text-sm">schedule</span> <span id="ok-time"></span></p>
+        </div>
+      </div>
+
+      <!-- Resultado RESTRINGIDO -->
+      <div class="hidden overflow-hidden rounded-xl border border-outline-variant bg-surface-container-lowest shadow-sm" id="result-no">
+        <div class="bg-secondary-container px-container-padding py-stack-md flex items-center gap-gutter">
+          <div class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
+            <span class="material-symbols-outlined text-on-secondary-container text-3xl" style="font-variation-settings:'FILL' 1">warning</span>
+          </div>
+          <div>
+            <p class="font-label-bold text-label-bold text-on-secondary-container uppercase">Estado: Restringido</p>
+            <h3 class="font-headline-md text-headline-md text-on-secondary-container">Pico y Placa Activo</h3>
+          </div>
+        </div>
+        <div class="p-container-padding space-y-unit">
+          <p class="font-body-md text-body-md text-on-surface-variant">Placa <span id="no-plate" class="font-bold text-on-surface"></span> NO puede circular hoy en <span id="no-city" class="font-bold text-on-surface"></span>.</p>
+          <p class="font-label-md text-label-md text-on-surface-variant" id="no-reason"></p>
+          <p class="font-label-md text-label-md text-outline flex items-center gap-1"><span class="material-symbols-outlined text-sm">schedule</span> <span id="no-time"></span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="h-24"></div>
+</main>
+
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center px-4 py-2 bg-surface border-t border-outline-variant shadow-md rounded-t-xl">
+  <a class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:text-primary" href="/">
+    <span class="material-symbols-outlined">home</span>
+    <span class="font-label-md text-label-md">Inicio</span>
+  </a>
+  <a class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:text-primary" href="/normas">
+    <span class="material-symbols-outlined">list_alt</span>
+    <span class="font-label-md text-label-md">Normas</span>
+  </a>
+  <a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-6 py-1" href="/validador">
+    <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1">document_scanner</span>
+    <span class="font-label-md text-label-md">Validador</span>
+  </a>
+</nav>
+
+<script>
+  const checkBtn    = document.getElementById('check-btn');
+  const uploadInput = document.getElementById('plate-upload');
+  const uploadZone  = document.getElementById('upload-zone');
+  const plateText   = document.getElementById('plate-text');
+  const citySelect  = document.getElementById('city-select');
+  const resultArea  = document.getElementById('result-area');
+  const resultOk    = document.getElementById('result-ok');
+  const resultNo    = document.getElementById('result-no');
+  const errorArea   = document.getElementById('error-area');
+  const errorMsg    = document.getElementById('error-msg');
+
+  let selectedFile = null;
+
+  uploadInput.addEventListener('change', function() {
+    if (!this.files || !this.files[0]) return;
+    selectedFile = this.files[0];
+    document.getElementById('upload-label').textContent = 'Foto seleccionada';
+    document.getElementById('upload-sub').textContent = selectedFile.name;
+    uploadZone.classList.replace('border-outline-variant', 'border-primary');
+    uploadZone.classList.replace('bg-surface-container-low', 'bg-primary-fixed/30');
+  });
+
+  checkBtn.addEventListener('click', async () => {
+    const city = citySelect.value;
+    errorArea.classList.add('hidden');
+    resultArea.classList.add('hidden');
+
+    const form = new FormData();
+    form.append('city', city);
+
+    if (selectedFile) {
+      form.append('image', selectedFile);
+    } else if (plateText.value.trim()) {
+      // entrada manual: llamamos al endpoint de texto
+      const raw = plateText.value.trim().toUpperCase().replace(/[^A-Z0-9]/g,'');
+      form.append('plate_text', raw);
+    } else {
+      showError('Sube una foto o ingresa la placa manualmente.');
+      return;
+    }
+
+    checkBtn.innerHTML = '<span class="material-symbols-outlined animate-spin">autorenew</span> Validando...';
+    checkBtn.disabled = true;
+
+    try {
+      const res = await fetch('/validate', { method: 'POST', body: form });
+      const data = await res.json();
+
+      if (!res.ok) {
+        showError(data.error || 'Error al procesar la solicitud.');
+        return;
+      }
+      showResult(data);
+    } catch (e) {
+      showError('Error de conexión. Intenta de nuevo.');
+    } finally {
+      checkBtn.innerHTML = '<span class="material-symbols-outlined">document_scanner</span> Verificar Ahora';
+      checkBtn.disabled = false;
+    }
+  });
+
+  function showResult(data) {
+    resultArea.classList.remove('hidden');
+    if (data.restricted) {
+      resultOk.classList.add('hidden');
+      resultNo.classList.remove('hidden');
+      document.getElementById('no-plate').textContent = data.plate;
+      document.getElementById('no-city').textContent  = data.city;
+      document.getElementById('no-reason').textContent = data.reason;
+      document.getElementById('no-time').textContent  = 'Consultado: ' + data.checked_at;
+    } else {
+      resultNo.classList.add('hidden');
+      resultOk.classList.remove('hidden');
+      document.getElementById('ok-plate').textContent = data.plate;
+      document.getElementById('ok-city').textContent  = data.city;
+      document.getElementById('ok-reason').textContent = data.reason;
+      document.getElementById('ok-time').textContent  = 'Consultado: ' + data.checked_at;
+    }
+    resultArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  const OCR_HINTS = {
+    'Placa detectada pero no legible': 'Acércate más a la placa, asegúrate de que esté bien iluminada y enfocada, y vuelve a intentarlo.',
+    'No se detectó ninguna placa en la imagen': 'Asegúrate de que la foto muestre claramente la placa del vehículo, preferiblemente de frente y sin obstrucciones.',
+  };
+
+  function showError(msg) {
+    errorMsg.textContent = msg;
+    const hint = OCR_HINTS[msg] || null;
+    const hintEl = document.getElementById('error-hint');
+    if (hint) {
+      hintEl.textContent = hint;
+      hintEl.classList.remove('hidden');
+    } else {
+      hintEl.classList.add('hidden');
+    }
+    errorArea.classList.remove('hidden');
+    errorArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    // resetear zona de carga para que el usuario pueda intentar de nuevo
+    selectedFile = null;
+    uploadInput.value = '';
+    document.getElementById('upload-label').textContent = 'Subir otra foto';
+    document.getElementById('upload-sub').textContent   = 'Toca para capturar o seleccionar';
+    uploadZone.classList.replace('border-primary',          'border-outline-variant');
+    uploadZone.classList.replace('bg-primary-fixed/30',     'bg-surface-container-low');
+  }
+</script>
+</body>
+</html>

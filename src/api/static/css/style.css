@@ -1,0 +1,92 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: system-ui, sans-serif;
+  background: #f4f6f9;
+  color: #1a1a2e;
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+
+main {
+  width: 100%;
+  max-width: 480px;
+}
+
+h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  color: #16213e;
+}
+
+.upload-section {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,.08);
+  display: flex;
+  flex-direction: column;
+  gap: .9rem;
+}
+
+label {
+  font-size: .85rem;
+  font-weight: 600;
+  color: #444;
+}
+
+select, input[type="file"] {
+  width: 100%;
+  padding: .55rem .75rem;
+  border: 1px solid #d0d5dd;
+  border-radius: 8px;
+  font-size: .95rem;
+  background: #fafafa;
+}
+
+#preview-container { text-align: center; }
+#preview { max-width: 100%; border-radius: 8px; max-height: 240px; object-fit: contain; }
+
+button {
+  padding: .75rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: #0f3460;
+  color: #fff;
+  transition: opacity .2s;
+}
+button:disabled { opacity: .45; cursor: not-allowed; }
+button:not(:disabled):hover { opacity: .88; }
+
+#result-section { margin-top: 1.5rem; }
+
+.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,.08);
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
+}
+
+.card p { font-size: .95rem; }
+.card p span { font-weight: 600; }
+
+.restricted  { border-left: 5px solid #e63946; }
+.allowed     { border-left: 5px solid #2a9d8f; }
+
+.error {
+  margin-top: 1rem;
+  color: #e63946;
+  font-size: .9rem;
+  text-align: center;
+}

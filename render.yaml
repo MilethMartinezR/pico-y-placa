@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: pico-y-placa
+    runtime: docker
+    plan: starter          # 512 MB RAM mínimo — starter = 1 GB
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHONUNBUFFERED
+        value: "1"
