@@ -231,13 +231,35 @@ Las pruebas de OCR (`tests/test_ocr.py`) y conversión de datos (`tests/test_con
 
 ---
 
-## ☁️ Despliegue en Render
-
-El archivo `render.yaml` ya está configurado. Solo conecta el repositorio en [render.com](https://render.com) y despliega el servicio web con runtime Docker.
-
-El health check apunta a `/health`.
-
----
+## Despliegue en Hugging Face Spaces
+ 
+La aplicación está desplegada como un **Space en Hugging Face** usando el SDK de Docker.
+ 
+### Configuración del Space
+ 
+El `Dockerfile` ya está listo para Hugging Face Spaces. Solo asegúrate de que el puerto expuesto sea el **7860** (requerido por la plataforma), lo cual ya está configurado:
+ 
+```dockerfile
+EXPOSE 7860
+CMD ["python", "-m", "gunicorn", "-w", "1", "-b", "0.0.0.0:7860", "src.api.app:create_app()"]
+```
+ 
+### Pasos para desplegar
+ 
+1. Crea una cuenta en [huggingface.co](https://huggingface.co) si no tienes una.
+2. Ve a **New Space** → elige el SDK **Docker**.
+3. Clona el repositorio del Space y copia el contenido de este proyecto:
+   ```bash
+   git clone https://huggingface.co/spaces/TU_USUARIO/pico-y-placa
+   ```
+4. Sube los archivos y haz push:
+   ```bash
+   git add .
+   git commit -m "Initial deploy"
+   git push
+   ```
+5. Hugging Face construirá la imagen automáticamente con el `Dockerfile` del proyecto.
+> **Nota:** Los pesos del modelo (`best.pt`) se descargan desde Google Drive durante el build gracias al paso `gdown` en el `Dockerfile`. Los modelos de EasyOCR también se precargan en la imagen para evitar descargas en tiempo de ejecución.
 
 ## Formatos de placa soportados
 
